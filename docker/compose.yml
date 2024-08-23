@@ -1,0 +1,65 @@
+version: "3.8"
+
+services:
+  web:
+    depends_on: 
+      - api
+    container_name: frontend
+    build: ./ren-salon-frontend
+    ports:
+      - 5173:5173
+    develop:
+      watch:
+        - path: ./ren-salon-frontend/package.json
+          action: rebuild
+        - path: ./ren-salon-frontend/package-lock.json
+          action: rebuild
+        - path: ./ren-salon-frontend
+          target: /app
+          action: sync
+
+
+  api: 
+    depends_on: 
+      - mysql
+    container_name: backend
+    build: ./ren-salon-backend
+    ports: 
+      - 3000:3000
+    develop:
+      watch:
+        - path: ./ren-salon-backend/package.json
+          action: rebuild
+        - path: ./ren-salon-backend/package-lock.json
+          action: rebuild
+        
+        - path: ./ren-salon-backend
+          target: /app
+          action: sync
+    
+  
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: changeme
+    volumes:
+      - mysql-data2:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: changeme
+    ports:
+      - "8080:80"
+    restart: always
+    depends_on:
+      - mysql
+
+volumes:
+  mysql-data2:
