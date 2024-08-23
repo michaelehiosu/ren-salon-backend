@@ -7,17 +7,10 @@ services:
     container_name: frontend
     build: ./ren-salon-frontend
     ports:
-      - 5173:5173
-    develop:
-      watch:
-        - path: ./ren-salon-frontend/package.json
-          action: rebuild
-        - path: ./ren-salon-frontend/package-lock.json
-          action: rebuild
-        - path: ./ren-salon-frontend
-          target: /app
-          action: sync
-
+      - "5173:5173"
+    volumes:
+      - ./ren-salon-frontend:/app
+      - /app/node_modules
 
   api: 
     depends_on: 
@@ -25,19 +18,11 @@ services:
     container_name: backend
     build: ./ren-salon-backend
     ports: 
-      - 3000:3000
-    develop:
-      watch:
-        - path: ./ren-salon-backend/package.json
-          action: rebuild
-        - path: ./ren-salon-backend/package-lock.json
-          action: rebuild
-        
-        - path: ./ren-salon-backend
-          target: /app
-          action: sync
-    
-  
+      - "3000:3000"
+    volumes:
+      - ./ren-salon-backend:/app
+      - /app/node_modules
+
   mysql:
     image: mysql:latest
     container_name: mysql
